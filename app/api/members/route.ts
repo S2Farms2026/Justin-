@@ -1,0 +1,3 @@
+import{ACCESS_CODE,allowed,denied,rpc}from"../../lib";
+export async function GET(){if(!await allowed())return denied();try{return Response.json({members:await rpc("s2_list_team_members",{p_code:ACCESS_CODE})})}catch(e){console.error(e);return Response.json({error:"Team unavailable"},{status:500})}}
+export async function POST(request:Request){if(!await allowed())return denied();try{const p=await request.json();const member=await rpc("s2_add_team_member",{p_code:ACCESS_CODE,p_name:p.name,p_phone:p.phone||"",p_sms_enabled:Boolean(p.smsEnabled)});return Response.json({member})}catch(e){console.error(e);return Response.json({error:"Add failed"},{status:500})}}
