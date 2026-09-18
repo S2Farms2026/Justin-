@@ -1,0 +1,2 @@
+import{adminCode,allowed,denied,memberToken,rpc}from"../../../lib";
+export async function DELETE(_:Request,{params}:{params:Promise<{id:string}>}){if(!await allowed())return denied();try{const{id}=await params;await rpc("nextasx_revoke_guest_share",{p_token:await memberToken(),p_admin_code:await adminCode(),p_share_id:Number(id)});return Response.json({ok:true})}catch(e){console.error(e);return Response.json({error:"Guest access could not be revoked."},{status:500})}}
