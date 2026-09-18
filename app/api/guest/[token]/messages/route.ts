@@ -1,0 +1,2 @@
+import{guestSessionToken,rpc}from"../../../../lib";
+export async function POST(request:Request,{params}:{params:Promise<{token:string}>}){try{const{token}=await params,session=await guestSessionToken(token),{body}=await request.json();if(!session)return Response.json({error:"PIN required"},{status:401});return Response.json({message:await rpc("nextasx_guest_add_message",{p_session_token:session,p_body:String(body||"")})})}catch(e){console.error(e);return Response.json({error:"Message could not be posted."},{status:403})}}
