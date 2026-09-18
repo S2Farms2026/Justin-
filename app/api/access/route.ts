@@ -1,0 +1,3 @@
+import{cookies}from"next/headers";import{ACCESS_CODE,ACCESS_TOKEN,allowed,memberIdentity}from"../../lib";
+export async function GET(){const identity=await memberIdentity();return Response.json({authorized:await allowed(),identity,admin:(await cookies()).get("s2_access")?.value===ACCESS_TOKEN})}
+export async function POST(request:Request){const{code}=await request.json();if(code!==ACCESS_CODE)return Response.json({error:"Incorrect code"},{status:401});(await cookies()).set("s2_access",ACCESS_TOKEN,{httpOnly:true,secure:true,sameSite:"lax",maxAge:2592000,path:"/"});return Response.json({authorized:true})}
