@@ -1,0 +1,2 @@
+import{guestSessionToken,rpc}from"../../../../../lib";
+export async function PATCH(request:Request,{params}:{params:Promise<{token:string,id:string}>}){try{const{token,id}=await params,session=await guestSessionToken(token),{complete}=await request.json();if(!session)return Response.json({error:"PIN required"},{status:401});return Response.json({item:await rpc("nextasx_guest_toggle_checklist",{p_session_token:session,p_id:Number(id),p_complete:Boolean(complete)})})}catch(e){console.error(e);return Response.json({error:"Checklist could not be updated."},{status:403})}}
