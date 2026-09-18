@@ -1,0 +1,2 @@
+import{guestSessionToken,rpc}from"../../../../lib";
+export async function GET(_:Request,{params}:{params:Promise<{token:string}>}){try{const{token}=await params,session=await guestSessionToken(token);if(!session)return Response.json({error:"PIN required"},{status:401});return Response.json(await rpc("nextasx_guest_task",{p_session_token:session}))}catch(e){console.error(e);return Response.json({error:"Guest session expired"},{status:401})}}
