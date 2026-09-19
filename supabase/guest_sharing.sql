@@ -36,9 +36,8 @@ begin
   select m.* into v_member from public.nextasx_member_sessions s join public.s2_team_members m on m.id=s.member_id
   where s.token_hash=encode(extensions.digest(p_token,'sha256'),'hex') and s.expires_at>now();
  end if;
- if v_member.id is not null then v_author:=v_member.name;
- elsif p_admin_code='6387' then v_author:='Administrator';
- else raise exception 'Unauthorized'; end if;
+ if v_member.id is null then raise exception 'Unauthorized'; end if;
+ v_author:=v_member.name;
  if p_pin !~ '^[0-9]{4,6}$' then raise exception 'PIN must be 4 to 6 digits'; end if;
  if p_expires_at<=now() or p_expires_at>now()+interval '180 days' then raise exception 'Invalid expiration'; end if;
  if not exists(select 1 from public.s2_tasks where id=p_task_id) then raise exception 'Task not found'; end if;
@@ -56,7 +55,6 @@ begin
  if p_token is not null and p_token<>'' then
   v_ok:=exists(select 1 from public.nextasx_member_sessions where token_hash=encode(extensions.digest(p_token,'sha256'),'hex') and expires_at>now());
  end if;
- if not v_ok and p_admin_code='6387' then v_ok:=true; end if;
  if not v_ok then raise exception 'Unauthorized'; end if;
  update public.nextasx_guest_shares set revoked_at=now() where id=p_share_id;
  delete from public.nextasx_guest_sessions where share_id=p_share_id;
